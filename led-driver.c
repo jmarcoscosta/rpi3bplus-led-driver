@@ -27,6 +27,24 @@ static ssize_t led_driver_read(struct file *file, char __user *user, size_t size
 	return len;
 }
 
+static ssize_t led_driver_write(struct file *file, const char __user *user,
+				size_t size, loff_t *off)
+{
+	int ret;
+
+	memset(data_buffer, 0x0, MAX_DATA_BUFFER_LENGTH);
+
+	ret = copy_from_user(data_buffer, user, size);
+	if (ret) {
+		pr_err("Error: couldn't copy %d bytes from userspace.\n", ret);
+		return -1;
+	}
+
+	pr_info("You said: %s\n", data_buffer);
+
+	return size;
+}
+
 static int __init led_driver_init(void)
 {
 	pr_info("LED driver: init\n");
