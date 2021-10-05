@@ -10,6 +10,9 @@ static char data_buffer[MAX_DATA_BUFFER_LENGTH];
 static int __init led_driver_init(void)
 {
 	pr_info("LED driver: init\n");
+
+	memset(data_buffer, 0x0, MAX_DATA_BUFFER_LENGTH);
+
 	return 0;
 }
 
