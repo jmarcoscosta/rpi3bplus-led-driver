@@ -2,10 +2,30 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+#include <linux/uaccess.h>
 
 #define MAX_DATA_BUFFER_LENGTH 1024
 
 static char data_buffer[MAX_DATA_BUFFER_LENGTH];
+
+static ssize_t led_driver_read(struct file *file, char __user *user, size_t size,
+			       loff_t *off)
+{
+	char *p = data_buffer;
+	static size_t len;
+	int ret;
+
+	while (*(p++))
+		len++;
+
+	ret = copy_to_user(user, data_buffer, len);
+	if (ret) {
+		pr_err("Error: couldn't copy %d bytes.\n", ret);
+		return -1;
+	}
+
+	return len;
+}
 
 static int __init led_driver_init(void)
 {
