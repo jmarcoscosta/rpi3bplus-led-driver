@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 
-#include <linux/module.h>
 #include <linux/kernel.h>
+#include <linux/module.h>
 
 static int __init led_driver_init(void)
 {
