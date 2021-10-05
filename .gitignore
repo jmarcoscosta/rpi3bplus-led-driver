@@ -50,3 +50,7 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Source directories (linux headers and cross toolchain)
+linux/
+toolchain/
