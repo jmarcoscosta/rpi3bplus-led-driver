@@ -3,6 +3,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 
+#define MAX_DATA_BUFFER_LENGTH 1024
+
+static char data_buffer[MAX_DATA_BUFFER_LENGTH];
+
 static int __init led_driver_init(void)
 {
 	pr_info("LED driver: init\n");
