@@ -54,3 +54,6 @@ dkms.conf
 # Source directories (linux headers and cross toolchain)
 linux/
 toolchain/
+
+# Vim swap files
+*.swp
