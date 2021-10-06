@@ -136,6 +136,13 @@ static int __init led_driver_init(void)
 	driver_data->led_cdev.name = "ipe:green:user";
 	driver_data->led_cdev.brightness_set = led_driver_write;
 
+	if (led_classdev_register(NULL, &driver_data->led_cdev)) {
+		pr_err("led-driver: Error registering led.\n");
+		iounmap(driver_data->gpio_registers);
+		kfree(driver_data);
+		return -1;
+	}
+
 	return 0;
 }
 
