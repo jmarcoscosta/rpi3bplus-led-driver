@@ -96,6 +96,11 @@ static ssize_t led_driver_write(struct file *file, const char __user *user,
 		return -1;
 	}
 
+	if (value)
+		set_gpio_on(pin);
+	else
+		set_gpio_off(pin);
+
 	pr_info("You said pin %d, value %d\n", pin, value);
 
 	return size;
