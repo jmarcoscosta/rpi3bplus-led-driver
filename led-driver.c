@@ -139,8 +139,8 @@ static int __init led_driver_init(void)
 static void __exit led_driver_exit(void)
 {
 	pr_info("LED driver: exit\n");
-	kfree(driver_data);
 	iounmap(driver_data->gpio_registers);
+	kfree(driver_data);
 }
 
 module_init(led_driver_init);
