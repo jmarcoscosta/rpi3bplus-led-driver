@@ -7,11 +7,11 @@
 #include <linux/slab.h>
 #include <linux/uaccess.h>
 
-#define BCM2837_GPIO_BASE_ADDR 0x3F200000
+#define GPIO_BASE_ADDR 0x3F200000
 #define MAX_DATA_BUFFER_LENGTH 1024
 #define GPIO_OUTPUT_CLEAR_0 0x28
 #define GPIO_OUTPUT_SET_0 0x1C
-#define IO_MEM_PAGE_SIZE 1024
+#define GPIO_REGION_SIZE 1024
 #define GPIO_PIN_LED 21
 
 static char data_buffer[MAX_DATA_BUFFER_LENGTH];
@@ -129,7 +129,7 @@ static int __init led_driver_init(void)
 		return -ENOMEM;
 	}
 
-	driver_data->gpio_registers = ioremap(BCM2837_GPIO_BASE_ADDR, IO_MEM_PAGE_SIZE);
+	driver_data->gpio_registers = ioremap(GPIO_BASE_ADDR, GPIO_REGION_SIZE);
 
 	set_gpio_as_output();
 
