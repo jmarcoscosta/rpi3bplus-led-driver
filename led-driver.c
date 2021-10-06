@@ -32,7 +32,7 @@ static void set_gpio_on(unsigned int pin)
 
 	fsel_index = pin / 10;
 	fsel_bitpos = pin % 10;
-	gpio_fsel = driver_data->gpio_registers + fsel_index;
+	gpio_fsel = (u32 *)driver_data->gpio_registers + fsel_index;
 	gpio_on_register = driver_data->gpio_registers + GPIO_OUTPUT_SET_0;
 
 	/* Clear FSEL bits */
