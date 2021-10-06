@@ -8,6 +8,7 @@
 
 #define BCM2837_GPIO_BASE_ADDR 0x3F200000
 #define MAX_DATA_BUFFER_LENGTH 1024
+#define GPIO_OUTPUT_SET_0 0x1C
 #define IO_MEM_PAGE_SIZE 1024
 
 static struct proc_dir_entry *led_driver_proc_entry;
@@ -15,6 +16,26 @@ static struct proc_dir_entry *led_driver_proc_entry;
 static char data_buffer[MAX_DATA_BUFFER_LENGTH];
 
 static u32 *gpio_registers;
+
+static void set_gpio_on(unsigned int pin)
+{
+	u32 *gpio_fsel, *gpio_on_register;
+	u32 fsel_index, fsel_bitpos;
+
+	fsel_index = pin / 10;
+	fsel_bitpos = pin % 10;
+	gpio_fsel = &gpio_registers[fsel_index];
+	gpio_on_register = &gpio_registers[GPIO_OUTPUT_SET_0];
+
+	/* Clear FSEL bits */
+	*gpio_fsel &= ~(7 << 3 * fsel_bitpos);
+
+	/* Set FSEL bit to 1 -> set the pin as an output */
+	*gpio_fsel |= (1 << 3 * fsel_bitpos);
+
+	/* Set the pin value to 1 */
+	*gpio_on_register |= (1 << pin);
+}
 
 static ssize_t led_driver_read(struct file *file, char __user *user, size_t size,
 			       loff_t *off)
