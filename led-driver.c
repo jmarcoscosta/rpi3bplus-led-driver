@@ -66,6 +66,7 @@ static ssize_t led_driver_read(struct file *file, char __user *user, size_t size
 static ssize_t led_driver_write(struct file *file, const char __user *user,
 				size_t size, loff_t *off)
 {
+	unsigned int pin, value;
 	int ret;
 
 	memset(data_buffer, 0x0, MAX_DATA_BUFFER_LENGTH);
@@ -74,6 +75,15 @@ static ssize_t led_driver_write(struct file *file, const char __user *user,
 	if (ret) {
 		pr_err("Error: couldn't copy %d bytes from userspace.\n", ret);
 		return -1;
+	}
+
+	/* Clamp size if it crosses the buffer's limit */
+	if (size > MAX_DATA_BUFFER_LENGTH)
+		size = MAX_DATA_BUFFER_LENGTH - 1;
+
+	if (sscanf(data_buffer, "%d,%d", &pin, &value) != 2) {
+		pr_err("Invalid data format.\n");
+		return size;
 	}
 
 	pr_info("You said: %s\n", data_buffer);
