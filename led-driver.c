@@ -2,6 +2,7 @@
 
 #include <linux/io.h>
 #include <linux/kernel.h>
+#include <linux/leds.h>
 #include <linux/module.h>
 #include <linux/proc_fs.h>
 #include <linux/uaccess.h>
@@ -16,7 +17,12 @@ static struct proc_dir_entry *led_driver_proc_entry;
 
 static char data_buffer[MAX_DATA_BUFFER_LENGTH];
 
-static u32 *gpio_registers;
+struct led_driver_data {
+	void *gpio_registers;
+	struct led_classdev led_cdev;
+};
+
+static struct led_driver_data *driver_data;
 
 static void set_gpio_on(unsigned int pin)
 {
@@ -25,8 +31,8 @@ static void set_gpio_on(unsigned int pin)
 
 	fsel_index = pin / 10;
 	fsel_bitpos = pin % 10;
-	gpio_fsel = gpio_registers + fsel_index;
-	gpio_on_register = (u32 *)((char *)gpio_registers + GPIO_OUTPUT_SET_0);
+	gpio_fsel = driver_data->gpio_registers + fsel_index;
+	gpio_on_register = driver_data->gpio_registers + GPIO_OUTPUT_SET_0;
 
 	/* Clear FSEL bits */
 	*gpio_fsel &= ~(7 << 3 * fsel_bitpos);
@@ -40,7 +46,7 @@ static void set_gpio_on(unsigned int pin)
 
 static void set_gpio_off(unsigned int pin)
 {
-	u32 *gpio_off_register = (u32 *)((char *)gpio_registers + GPIO_OUTPUT_CLEAR_0);
+	u32 *gpio_off_register = driver_data->gpio_registers + GPIO_OUTPUT_CLEAR_0;
 	*gpio_off_register |= (1 << pin);
 }
 
@@ -117,7 +123,7 @@ static int __init led_driver_init(void)
 
 	memset(data_buffer, 0x0, MAX_DATA_BUFFER_LENGTH);
 
-	gpio_registers = ioremap(BCM2837_GPIO_BASE_ADDR, IO_MEM_PAGE_SIZE);
+	driver_data->gpio_registers = ioremap(BCM2837_GPIO_BASE_ADDR, IO_MEM_PAGE_SIZE);
 
 	led_driver_proc_entry = proc_create("led-driver", 0666, NULL,
 					    &led_driver_proc_fops);
@@ -133,7 +139,7 @@ static void __exit led_driver_exit(void)
 {
 	pr_info("LED driver: exit\n");
 	proc_remove(led_driver_proc_entry);
-	iounmap(gpio_registers);
+	iounmap(driver_data->gpio_registers);
 }
 
 module_init(led_driver_init);
