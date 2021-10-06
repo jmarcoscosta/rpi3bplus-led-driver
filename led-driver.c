@@ -55,47 +55,13 @@ static void set_gpio_off(void)
 	*gpio_off_register |= (1 << GPIO_PIN_LED);
 }
 
-static ssize_t led_driver_write(struct file *file, const char __user *user,
-				size_t size, loff_t *off)
+static void brightness_set_callback(struct led_classdev *led_cdev,
+				    enum led_brightness brightness)
 {
-	unsigned int pin, value;
-	int ret;
-
-	memset(data_buffer, 0x0, MAX_DATA_BUFFER_LENGTH);
-
-	ret = copy_from_user(data_buffer, user, size);
-	if (ret) {
-		pr_err("Error: couldn't copy %d bytes from userspace.\n", ret);
-		return -1;
-	}
-
-	/* Clamp size if it crosses the buffer's limit */
-	if (size > MAX_DATA_BUFFER_LENGTH)
-		size = MAX_DATA_BUFFER_LENGTH - 1;
-
-	if (sscanf(data_buffer, "%d,%d", &pin, &value) != 2) {
-		pr_err("Invalid data format.\n");
-		return size;
-	}
-
-	if (pin > 27 || pin < 0) {
-		pr_err("Invalid pin number.\n");
-		return -1;
-	}
-
-	if (value != 0 && value != 1) {
-		pr_err("Invalid value.\n");
-		return -1;
-	}
-
-	if (value)
+	if (brightness)
 		set_gpio_on();
 	else
 		set_gpio_off();
-
-	pr_info("You said pin %d, value %d\n", pin, value);
-
-	return size;
 }
 
 static int __init led_driver_init(void)
@@ -115,7 +81,7 @@ static int __init led_driver_init(void)
 	set_gpio_as_output();
 
 	driver_data->led_cdev.name = "ipe:green:user";
-	driver_data->led_cdev.brightness_set = led_driver_write;
+	driver_data->led_cdev.brightness_set = brightness_set_callback;
 
 	if (led_classdev_register(NULL, &driver_data->led_cdev)) {
 		pr_err("led-driver: Error registering led.\n");
