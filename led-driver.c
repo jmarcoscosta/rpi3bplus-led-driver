@@ -8,6 +8,7 @@
 
 #define BCM2837_GPIO_BASE_ADDR 0x3F200000
 #define MAX_DATA_BUFFER_LENGTH 1024
+#define GPIO_OUTPUT_CLEAR_0 0x28
 #define GPIO_OUTPUT_SET_0 0x1C
 #define IO_MEM_PAGE_SIZE 1024
 
@@ -35,6 +36,12 @@ static void set_gpio_on(unsigned int pin)
 
 	/* Set the pin value to 1 */
 	*gpio_on_register |= (1 << pin);
+}
+
+static void set_gpio_off(unsigned int pin)
+{
+	u32 *gpio_off_register = &gpio_registers[GPIO_OUTPUT_CLEAR_0];
+	*gpio_off_register |= (1 << pin);
 }
 
 static ssize_t led_driver_read(struct file *file, char __user *user, size_t size,
