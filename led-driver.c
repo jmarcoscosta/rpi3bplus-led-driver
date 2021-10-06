@@ -12,6 +12,7 @@
 #define GPIO_OUTPUT_CLEAR_0 0x28
 #define GPIO_OUTPUT_SET_0 0x1C
 #define IO_MEM_PAGE_SIZE 1024
+#define GPIO_PIN_LED 21
 
 static char data_buffer[MAX_DATA_BUFFER_LENGTH];
 
@@ -22,13 +23,13 @@ struct led_driver_data {
 
 static struct led_driver_data *driver_data;
 
-static void set_gpio_on(unsigned int pin)
+static void set_gpio_on(void)
 {
 	u32 *gpio_fsel, *gpio_on_register;
 	u32 fsel_index, fsel_bitpos;
 
-	fsel_index = pin / 10;
-	fsel_bitpos = pin % 10;
+	fsel_index = GPIO_PIN_LED / 10;
+	fsel_bitpos = GPIO_PIN_LED % 10;
 	gpio_fsel = (u32 *)driver_data->gpio_registers + fsel_index;
 	gpio_on_register = driver_data->gpio_registers + GPIO_OUTPUT_SET_0;
 
@@ -39,13 +40,13 @@ static void set_gpio_on(unsigned int pin)
 	*gpio_fsel |= (1 << 3 * fsel_bitpos);
 
 	/* Set the pin value to 1 */
-	*gpio_on_register |= (1 << pin);
+	*gpio_on_register |= (1 << GPIO_PIN_LED);
 }
 
-static void set_gpio_off(unsigned int pin)
+static void set_gpio_off(void)
 {
 	u32 *gpio_off_register = driver_data->gpio_registers + GPIO_OUTPUT_CLEAR_0;
-	*gpio_off_register |= (1 << pin);
+	*gpio_off_register |= (1 << GPIO_PIN_LED);
 }
 
 static ssize_t led_driver_read(struct file *file, char __user *user, size_t size,
@@ -101,9 +102,9 @@ static ssize_t led_driver_write(struct file *file, const char __user *user,
 	}
 
 	if (value)
-		set_gpio_on(pin);
+		set_gpio_on();
 	else
-		set_gpio_off(pin);
+		set_gpio_off();
 
 	pr_info("You said pin %d, value %d\n", pin, value);
 
