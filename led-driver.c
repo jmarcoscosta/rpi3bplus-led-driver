@@ -86,6 +86,16 @@ static ssize_t led_driver_write(struct file *file, const char __user *user,
 		return size;
 	}
 
+	if (pin > 27 || pin < 0) {
+		pr_err("Invalid pin number.\n");
+		return -1;
+	}
+
+	if (value != 0 && value != 1) {
+		pr_err("Invalid value.\n");
+		return -1;
+	}
+
 	pr_info("You said: %s\n", data_buffer);
 
 	return size;
