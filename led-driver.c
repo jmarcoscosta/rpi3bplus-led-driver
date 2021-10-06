@@ -96,7 +96,7 @@ static ssize_t led_driver_write(struct file *file, const char __user *user,
 		return -1;
 	}
 
-	pr_info("You said: %s\n", data_buffer);
+	pr_info("You said pin %d, value %d\n", pin, value);
 
 	return size;
 }
