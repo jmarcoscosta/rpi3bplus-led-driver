@@ -55,25 +55,6 @@ static void set_gpio_off(void)
 	*gpio_off_register |= (1 << GPIO_PIN_LED);
 }
 
-static ssize_t led_driver_read(struct file *file, char __user *user, size_t size,
-			       loff_t *off)
-{
-	char *p = data_buffer;
-	static size_t len;
-	int ret;
-
-	while (*(p++))
-		len++;
-
-	ret = copy_to_user(user, data_buffer, len);
-	if (ret) {
-		pr_err("Error: couldn't copy %d bytes.\n", ret);
-		return -1;
-	}
-
-	return len;
-}
-
 static ssize_t led_driver_write(struct file *file, const char __user *user,
 				size_t size, loff_t *off)
 {
