@@ -79,6 +79,7 @@ static int __init led_driver_init(void)
 	driver_data->gpio_registers = ioremap(GPIO_BASE_ADDR, GPIO_REGION_SIZE);
 
 	set_gpio_as_output();
+	set_gpio_off();
 
 	driver_data->led_cdev.name = "ipe:green:user";
 	driver_data->led_cdev.brightness_set = brightness_set_callback;
