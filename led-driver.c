@@ -1,15 +1,20 @@
 // SPDX-License-Identifier: GPL-2.0
 
+#include <linux/io.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/proc_fs.h>
 #include <linux/uaccess.h>
 
+#define BCM2837_GPIO_BASE_ADDR 0x3F200000
 #define MAX_DATA_BUFFER_LENGTH 1024
+#define IO_MEM_PAGE_SIZE 1024
 
 static struct proc_dir_entry *led_driver_proc_entry;
 
 static char data_buffer[MAX_DATA_BUFFER_LENGTH];
+
+static u32 *gpio_registers;
 
 static ssize_t led_driver_read(struct file *file, char __user *user, size_t size,
 			       loff_t *off)
@@ -59,6 +64,8 @@ static int __init led_driver_init(void)
 
 	memset(data_buffer, 0x0, MAX_DATA_BUFFER_LENGTH);
 
+	gpio_registers = ioremap(BCM2837_GPIO_BASE_ADDR, IO_MEM_PAGE_SIZE);
+
 	led_driver_proc_entry = proc_create("led-driver", 0666, NULL,
 					    &led_driver_proc_fops);
 	if (!led_driver_proc_entry) {
@@ -73,6 +80,7 @@ static void __exit led_driver_exit(void)
 {
 	pr_info("LED driver: exit\n");
 	proc_remove(led_driver_proc_entry);
+	iounmap(gpio_registers);
 }
 
 module_init(led_driver_init);
