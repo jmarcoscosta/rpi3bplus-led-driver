@@ -25,8 +25,8 @@ static void set_gpio_on(unsigned int pin)
 
 	fsel_index = pin / 10;
 	fsel_bitpos = pin % 10;
-	gpio_fsel = &gpio_registers[fsel_index];
-	gpio_on_register = &gpio_registers[GPIO_OUTPUT_SET_0];
+	gpio_fsel = gpio_registers + fsel_index;
+	gpio_on_register = (u32 *)((char *)gpio_registers + GPIO_OUTPUT_SET_0);
 
 	/* Clear FSEL bits */
 	*gpio_fsel &= ~(7 << 3 * fsel_bitpos);
@@ -40,7 +40,7 @@ static void set_gpio_on(unsigned int pin)
 
 static void set_gpio_off(unsigned int pin)
 {
-	u32 *gpio_off_register = &gpio_registers[GPIO_OUTPUT_CLEAR_0];
+	u32 *gpio_off_register = (u32 *)((char *)gpio_registers + GPIO_OUTPUT_CLEAR_0);
 	*gpio_off_register |= (1 << pin);
 }
 
