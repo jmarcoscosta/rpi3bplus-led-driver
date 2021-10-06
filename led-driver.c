@@ -125,6 +125,11 @@ static int __init led_driver_init(void)
 	memset(data_buffer, 0x0, MAX_DATA_BUFFER_LENGTH);
 
 	driver_data = kzalloc(sizeof(*driver_data), GFP_KERNEL);
+	if (!driver_data) {
+		pr_err("Error when allocating memory for led_driver_data.\n");
+		return -ENOMEM;
+	}
+
 	driver_data->gpio_registers = ioremap(BCM2837_GPIO_BASE_ADDR, IO_MEM_PAGE_SIZE);
 
 	led_driver_proc_entry = proc_create("led-driver", 0666, NULL,
