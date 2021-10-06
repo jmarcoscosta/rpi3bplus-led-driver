@@ -5,6 +5,7 @@
 #include <linux/leds.h>
 #include <linux/module.h>
 #include <linux/proc_fs.h>
+#include <linux/slab.h>
 #include <linux/uaccess.h>
 
 #define BCM2837_GPIO_BASE_ADDR 0x3F200000
@@ -123,6 +124,7 @@ static int __init led_driver_init(void)
 
 	memset(data_buffer, 0x0, MAX_DATA_BUFFER_LENGTH);
 
+	driver_data = kzalloc(sizeof(*driver_data), GFP_KERNEL);
 	driver_data->gpio_registers = ioremap(BCM2837_GPIO_BASE_ADDR, IO_MEM_PAGE_SIZE);
 
 	led_driver_proc_entry = proc_create("led-driver", 0666, NULL,
@@ -138,6 +140,7 @@ static int __init led_driver_init(void)
 static void __exit led_driver_exit(void)
 {
 	pr_info("LED driver: exit\n");
+	kfree(driver_data);
 	proc_remove(led_driver_proc_entry);
 	iounmap(driver_data->gpio_registers);
 }
