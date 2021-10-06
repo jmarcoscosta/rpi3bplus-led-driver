@@ -133,6 +133,9 @@ static int __init led_driver_init(void)
 
 	set_gpio_as_output();
 
+	driver_data->led_cdev.name = "ipe:green:user";
+	driver_data->led_cdev.brightness_set = led_driver_write;
+
 	return 0;
 }
 
