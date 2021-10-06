@@ -131,6 +131,8 @@ static int __init led_driver_init(void)
 
 	driver_data->gpio_registers = ioremap(BCM2837_GPIO_BASE_ADDR, IO_MEM_PAGE_SIZE);
 
+	set_gpio_as_output();
+
 	return 0;
 }
 
