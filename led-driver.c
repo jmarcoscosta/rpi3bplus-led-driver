@@ -25,18 +25,12 @@ static struct led_driver_data *driver_data;
 
 static void set_gpio_on(void)
 {
-	u32 *gpio_on_register;
-
-	gpio_on_register = driver_data->gpio_registers + GPIO_OUTPUT_SET_0;
-
-	/* Set the pin value to 1 */
-	*gpio_on_register |= (1 << GPIO_PIN_LED);
+	gpiod_set_value(driver_data->desc, 1);
 }
 
 static void set_gpio_off(void)
 {
-	u32 *gpio_off_register = driver_data->gpio_registers + GPIO_OUTPUT_CLEAR_0;
-	*gpio_off_register |= (1 << GPIO_PIN_LED);
+	gpiod_set_value(driver_data->desc, 0);
 }
 
 static void brightness_set_callback(struct led_classdev *led_cdev,
