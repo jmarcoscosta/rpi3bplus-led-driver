@@ -8,13 +8,10 @@
 #include <linux/uaccess.h>
 
 #define GPIO_BASE_ADDR 0x3F200000
-#define MAX_DATA_BUFFER_LENGTH 1024
 #define GPIO_OUTPUT_CLEAR_0 0x28
 #define GPIO_OUTPUT_SET_0 0x1C
 #define GPIO_REGION_SIZE 1024
 #define GPIO_PIN_LED 21
-
-static char data_buffer[MAX_DATA_BUFFER_LENGTH];
 
 struct led_driver_data {
 	void *gpio_registers;
@@ -67,8 +64,6 @@ static void brightness_set_callback(struct led_classdev *led_cdev,
 static int __init led_driver_init(void)
 {
 	pr_info("LED driver: init\n");
-
-	memset(data_buffer, 0x0, MAX_DATA_BUFFER_LENGTH);
 
 	driver_data = kzalloc(sizeof(*driver_data), GFP_KERNEL);
 	if (!driver_data) {
