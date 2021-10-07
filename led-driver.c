@@ -23,22 +23,6 @@ struct led_driver_data {
 
 static struct led_driver_data *driver_data;
 
-static void set_gpio_as_output(void)
-{
-	u32 fsel_index, fsel_bitpos;
-	u32 *gpio_fsel;
-
-	fsel_index = GPIO_PIN_LED / 10;
-	fsel_bitpos = GPIO_PIN_LED % 10;
-	gpio_fsel = (u32 *)driver_data->gpio_registers + fsel_index;
-
-	/* Clear FSEL bits */
-	*gpio_fsel &= ~(7 << 3 * fsel_bitpos);
-
-	/* Set FSEL bit to 1 -> set the pin as an output */
-	*gpio_fsel |= (1 << 3 * fsel_bitpos);
-}
-
 static void set_gpio_on(void)
 {
 	u32 *gpio_on_register;
