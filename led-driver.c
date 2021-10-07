@@ -16,7 +16,6 @@
 #define GPIO_PIN_LED 21
 
 struct led_driver_data {
-	void *gpio_registers;
 	struct gpio_desc *desc;
 	struct led_classdev led_cdev;
 };
@@ -77,7 +76,6 @@ static int __init led_driver_init(void)
 static void __exit led_driver_exit(void)
 {
 	pr_info("LED driver: exit\n");
-	iounmap(driver_data->gpio_registers);
 	kfree(driver_data);
 }
 
