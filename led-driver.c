@@ -17,6 +17,7 @@
 
 struct led_driver_data {
 	void *gpio_registers;
+	struct gpio_desc *desc;
 	struct led_classdev led_cdev;
 };
 
@@ -73,17 +74,21 @@ static int __init led_driver_init(void)
 		return -ENOMEM;
 	}
 
-	driver_data->gpio_registers = ioremap(GPIO_BASE_ADDR, GPIO_REGION_SIZE);
+	if (gpio_request(GPIO_PIN_LED, "led-driver")) {
+		pr_err("Error requesting GPIO for led-driver.\n");
+		kfree(driver_data);
+		return -1;
+	}
 
-	set_gpio_as_output();
-	set_gpio_off();
+	driver_data->desc = gpio_to_desc(GPIO_PIN_LED);
+	gpiod_direction_output(driver_data->desc, 0);
 
 	driver_data->led_cdev.name = "ipe:green:user";
 	driver_data->led_cdev.brightness_set = brightness_set_callback;
 
 	if (led_classdev_register(NULL, &driver_data->led_cdev)) {
 		pr_err("led-driver: Error registering led.\n");
-		iounmap(driver_data->gpio_registers);
+		gpio_free(GPIO_PIN_LED);
 		kfree(driver_data);
 		return -1;
 	}
