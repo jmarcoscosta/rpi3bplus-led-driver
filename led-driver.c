@@ -72,6 +72,7 @@ static int __init led_driver_init(void)
 static void __exit led_driver_exit(void)
 {
 	pr_info("LED driver: exit\n");
+	gpio_free(GPIO_PIN_LED);
 	kfree(driver_data);
 }
 
