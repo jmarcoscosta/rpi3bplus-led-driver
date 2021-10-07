@@ -9,10 +9,6 @@
 #include <linux/slab.h>
 #include <linux/uaccess.h>
 
-#define GPIO_BASE_ADDR 0x3F200000
-#define GPIO_OUTPUT_CLEAR_0 0x28
-#define GPIO_OUTPUT_SET_0 0x1C
-#define GPIO_REGION_SIZE 1024
 #define GPIO_PIN_LED 21
 
 struct led_driver_data {
